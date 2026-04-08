@@ -1,3 +1,13 @@
+---
+title: DebugTraceEnv
+emoji: 🐛
+colorFrom: blue
+colorTo: green
+sdk: docker
+app_file: main.py
+pinned: false
+---
+
 # DebugTraceEnv
 
 A reinforcement learning environment for debugging broken Python functions.
