@@ -29,7 +29,11 @@ dependencies = [
     "pytest==8.1.1",
     "requests==2.31.0",
     "openai>=1.50.0",
+    "openenv-core>=0.2.0",
 ]
+
+[project.scripts]
+debugtrace-env = "server.app:app"
 
 [project.optional-dependencies]
 dev = [
