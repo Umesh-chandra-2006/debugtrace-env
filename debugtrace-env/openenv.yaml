@@ -1,0 +1,23 @@
+name: DebugTraceEnv
+version: 1.0.0
+description: >
+  An RL environment where an agent receives a broken Python
+  function and must produce a corrected fix. Grader executes
+  the fix against a test suite and returns a score 0.0--1.0.
+tasks:
+  - id: easy
+    description: Fix a syntax or obvious runtime error
+    difficulty: easy
+  - id: medium
+    description: Fix a logic bug producing wrong output
+    difficulty: medium
+  - id: hard
+    description: Fix a multi-step algorithmic error
+    difficulty: hard
+api:
+  reset: POST /reset
+  step: POST /step
+  state: GET /state
+  tasks: GET /tasks
+  grader: POST /grader
+  baseline: POST /baseline
