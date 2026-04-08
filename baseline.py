@@ -1,19 +1,18 @@
 import requests
 import os
-import google.generativeai as genai
 
 BASE_URL = 'http://localhost:7860'
-GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
+OPENROUTER_API_KEY = os.getenv('OPENROUTER_API_KEY')
 
-if not GEMINI_API_KEY:
-    raise ValueError("GEMINI_API_KEY environment variable not set")
+if not OPENROUTER_API_KEY:
+    raise ValueError("OPENROUTER_API_KEY environment variable not set")
 
-genai.configure(api_key=GEMINI_API_KEY)
-model = genai.GenerativeModel('gemini-pro')
+OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1"
+MODEL = "nvidia/nemotron-3-super-120b-a12b:free"
 
-def fix_code_with_gemini(broken_code, task_description):
+def fix_code_with_nemotron(broken_code, task_description):
     """
-    Use Gemini API to generate a fix for broken code.
+    Use OpenRouter's Nemotron model to generate a fix for broken code.
     """
     prompt = f"""You are an expert Python developer. Fix the following broken Python function.
 
@@ -26,14 +25,36 @@ Return ONLY the fixed function code. Do not include explanations or test cases.
 Keep the function signature exactly the same."""
     
     try:
-        response = model.generate_content(prompt, temperature=0.1, max_output_tokens=500)
-        fixed_code = response.text.strip()
+        response = requests.post(
+            f"{OPENROUTER_BASE_URL}/chat/completions",
+            headers={
+                "Authorization": f"Bearer {OPENROUTER_API_KEY}",
+                "HTTP-Referer": "https://huggingface.co/spaces/umesh-tirumani/debugtrace-env",
+                "X-Title": "DebugTraceEnv"
+            },
+            json={
+                "model": MODEL,
+                "messages": [
+                    {"role": "user", "content": prompt}
+                ],
+                "temperature": 0.1,
+                "max_tokens": 500
+            }
+        )
+        
+        if response.status_code != 200:
+            print(f"OpenRouter API error: {response.status_code} - {response.text}")
+            return ""
+        
+        result = response.json()
+        fixed_code = result['choices'][0]['message']['content'].strip()
+        
         # Clean up markdown code blocks if present
         if fixed_code.startswith('```'):
             fixed_code = '\n'.join(fixed_code.split('\n')[1:-1])
         return fixed_code
     except Exception as e:
-        print(f"Error calling Gemini API: {e}")
+        print(f"Error calling OpenRouter API: {e}")
         return ""
 
 def run_baseline():
@@ -51,9 +72,9 @@ def run_baseline():
             print(f"Description: {description}")
             print(f"{'='*60}")
             
-            # Get Gemini's fix
-            print(f"Calling Gemini API to fix {task_id} task...")
-            fixed_code = fix_code_with_gemini(broken_code, description)
+            # Get Nemotron's fix
+            print(f"Calling OpenRouter Nemotron API to fix {task_id} task...")
+            fixed_code = fix_code_with_nemotron(broken_code, description)
             
             if not fixed_code:
                 results[task_id] = 0.0
