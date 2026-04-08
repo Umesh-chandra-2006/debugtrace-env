@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Body
 from pydantic import BaseModel
 from env import DebugTraceEnv
 from tasks import TASKS
@@ -14,7 +14,7 @@ class StepRequest(BaseModel):
     fixed_code: str
 
 @app.post('/reset')
-def reset(req: ResetRequest):
+def reset(req: ResetRequest = Body(default=ResetRequest())):
     return env.reset(req.task_id)
 
 @app.post('/step')
