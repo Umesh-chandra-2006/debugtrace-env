@@ -3,7 +3,7 @@
 DebugTraceEnv Inference Script
 Evaluates an LLM agent (via OpenAI Client) on code debugging tasks.
 
-Uses OpenAI-compatible HuggingFace Inference API endpoint.
+Uses OpenAI API for LLM inference.
 Outputs [START], [STEP], [END] format for hackathon submission.
 """
 
@@ -14,8 +14,8 @@ import requests
 from openai import OpenAI
 
 # Environment variables with defaults
-API_BASE_URL = os.getenv("API_BASE_URL", "https://openrouter.ai/api/v1")
-MODEL_NAME = os.getenv("MODEL_NAME", "nvidia/nemotron-3-super-120b-a12b:free")
+API_BASE_URL = os.getenv("API_BASE_URL", "https://api.openai.com/v1")
+MODEL_NAME = os.getenv("MODEL_NAME", "gpt-4o-mini")
 HF_TOKEN = os.getenv("HF_TOKEN")
 
 if HF_TOKEN is None:
