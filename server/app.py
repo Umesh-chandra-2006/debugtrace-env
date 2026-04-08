@@ -2,6 +2,7 @@ from fastapi import FastAPI, Body
 from pydantic import BaseModel
 import sys
 import os
+import uvicorn
 
 # Add parent directory to path for imports
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -46,3 +47,11 @@ def grader(req: StepRequest):
 def baseline():
     import baseline as bl
     return bl.run_baseline()
+
+def main():
+    """Entry point for uvicorn server"""
+    uvicorn.run(app, host='0.0.0.0', port=7860)
+
+if __name__ == '__main__':
+    main()
+

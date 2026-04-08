@@ -33,7 +33,7 @@ dependencies = [
 ]
 
 [project.scripts]
-debugtrace-env = "server.app:app"
+debugtrace-env = "server.app:main"
 
 [project.optional-dependencies]
 dev = [
