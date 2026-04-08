@@ -3,7 +3,7 @@
 DebugTraceEnv Inference Script
 Evaluates an LLM agent (via OpenAI Client) on code debugging tasks.
 
-Uses OpenAI API for LLM inference.
+Uses OpenAI-compatible OpenRouter API endpoint.
 Outputs [START], [STEP], [END] format for hackathon submission.
 """
 
@@ -14,14 +14,14 @@ import requests
 from openai import OpenAI
 
 # Environment variables with defaults
-API_BASE_URL = os.getenv("API_BASE_URL", "https://api.openai.com/v1")
-MODEL_NAME = os.getenv("MODEL_NAME", "gpt-4o-mini")
+API_BASE_URL = os.getenv("API_BASE_URL", "https://openrouter.ai/api/v1")
+MODEL_NAME = os.getenv("MODEL_NAME", "nvidia/nemotron-3-super-120b-a12b:free")
 HF_TOKEN = os.getenv("HF_TOKEN")
 
 if HF_TOKEN is None:
     raise ValueError("HF_TOKEN environment variable is required")
 
-# Initialize OpenAI client pointing to HuggingFace API
+# Initialize OpenAI client pointing to OpenRouter API
 client = OpenAI(
     base_url=API_BASE_URL,
     api_key=HF_TOKEN
@@ -32,7 +32,7 @@ ENV_BASE_URL = os.getenv("ENV_BASE_URL", "http://localhost:7860")
 
 def fix_code_with_llm(broken_code, task_description):
     """
-    Use OpenAI Client to generate a fix for broken code via HuggingFace API.
+    Use OpenAI Client to generate a fix for broken code via OpenRouter API.
     """
     prompt = f"""You are an expert Python developer. Fix the following broken Python function.
 
