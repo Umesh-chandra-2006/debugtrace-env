@@ -1,0 +1,59 @@
+[build-system]
+requires = ["setuptools>=65.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "debugtrace-env"
+version = "1.0.0"
+description = "An RL environment where an agent receives a broken Python function and must produce a corrected fix. Grader executes the fix against a test suite and returns a score 0.0-1.0."
+readme = "README.md"
+requires-python = ">=3.11"
+authors = [
+    {name = "Umesh Chandra", email = "umesh@example.com"}
+]
+license = {text = "MIT"}
+keywords = ["rl", "environment", "debugging", "code", "openenv"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+]
+dependencies = [
+    "fastapi==0.110.0",
+    "uvicorn==0.29.0",
+    "pydantic==2.10.0",
+    "pytest==8.1.1",
+    "requests==2.31.0",
+    "openai>=1.50.0",
+    "openenv-core>=0.2.0",
+]
+
+[project.scripts]
+server = "server.app:main"
+debugtrace-env = "server.app:main"
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+    "black>=23.0.0",
+    "ruff>=0.1.0",
+]
+
+[project.urls]
+Repository = "https://github.com/Umesh-chandra-2006/debugtrace-env"
+Documentation = "https://github.com/Umesh-chandra-2006/debugtrace-env#readme"
+
+[tool.setuptools]
+packages = [".", "envs"]
+
+[tool.black]
+line-length = 100
+target-version = ["py311", "py312", "py313"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
