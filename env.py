@@ -31,7 +31,7 @@ class DebugTraceEnv:
             'reward': score,
             'done': True,
             'score': score,
-            'passed': score == 1.0
+            'passed': score >= 0.99
         }
 
     def state(self):
@@ -56,14 +56,14 @@ class DebugTraceEnv:
                 capture_output=True, text=True, cwd=tmpdir, timeout=10
             )
             if '1 passed' in result.stdout:
-                return 1.0
+                return 0.99
             elif '2 passed' in result.stdout:
-                return 1.0
+                return 0.99
             elif 'passed' in result.stdout:
                 # partial: count passed/total
                 import re
                 m = re.search(r'(\d+) passed', result.stdout)
-                if m: return min(float(m.group(1)) / 2.0, 1.0)
+                if m: return min(float(m.group(1)) / 2.0, 0.99)
             elif result.returncode == 0:
                 return 0.5  # compiled, no crash, but no tests
-            return 0.0
+            return 0.01
