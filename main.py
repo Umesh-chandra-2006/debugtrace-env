@@ -59,6 +59,14 @@ def list_tasks():
     return [{'id': t['id'], 'description': t['description'], 
              'action_schema': {'fixed_code': 'string'}} for t in TASKS]
 
+@app.get('/')
+def health():
+    return {'status': 'ok', 'service': 'DebugTraceEnv'}
+
+@app.get('/logs')
+def get_logs():
+    return {'logs': []}
+
 @app.post('/grader')
 def grader(req: StepRequest):
     if not env.current_task:
