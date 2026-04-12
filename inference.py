@@ -26,6 +26,7 @@ def run_episode(task_id):
     
     try:
         print(f"[START] task={task_id} env=debugtrace model={MODEL_NAME}")
+        sys.stdout.flush()
         
         reset_resp = requests.post(f"{ENV_BASE_URL}/reset", json={"task_id": task_id}, timeout=10).json()
         broken = reset_resp['broken_code']
@@ -50,19 +51,23 @@ def run_episode(task_id):
         err_str = json.dumps(err) if err else "null"
         
         print(f"[STEP] step=1 action=submit_fix reward={reward:.2f} done={str(done).lower()} error={err_str}")
+        sys.stdout.flush()
         rewards.append(reward)
         steps_taken = 1
         
-        if reward >= 0.99:
+        if reward >= 1.0:
             success = True
             
     except Exception as e:
         print(f"[STEP] step=1 action=submit_fix reward=0.00 done=true error={json.dumps(str(e))}")
+        sys.stdout.flush()
         rewards.append(0.00)
         steps_taken = 1
         
-    rewards_str = ",".join(f"{r:.2f}" for r in rewards)
-    print(f"[END] success={str(success).lower()} steps={steps_taken} rewards={rewards_str}")
+    finally:
+        rewards_str = ",".join(f"{r:.2f}" for r in rewards)
+        print(f"[END] success={str(success).lower()} steps={steps_taken} rewards={rewards_str}")
+        sys.stdout.flush()
 
 def main():
     try:
