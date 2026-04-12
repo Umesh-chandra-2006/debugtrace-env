@@ -539,78 +539,6 @@ Before Docker, test the raw server:
 
 **Step 2 --- Test Each Endpoint Manually**
 
-Open a new terminal while the server is running and run these curl
-commands one by one:
-
-> \# Test reset
->
-> curl -X POST http://localhost:7860/reset \\
->
-> -H \'Content-Type: application/json\' \\
->
-> -d \'{\"task_id\": \"easy\"}\'
->
-> \# Expected: JSON with broken_code, stack_trace, instruction fields
->
-> \# Test step with a correct fix
->
-> curl -X POST http://localhost:7860/step \\
->
-> -H \'Content-Type: application/json\' \\
->
-> -d \'{\"fixed_code\": \"def sum_list(nums):\\n return sum(nums)\"}\'
->
-> \# Expected: {reward: 1.0, done: true, passed: true}
->
-> \# Test state
->
-> curl http://localhost:7860/state
->
-> \# Test tasks list
->
-> curl http://localhost:7860/tasks
->
-> \# Expected: array of 3 tasks with id, description, action_schema
-
-**Step 3 --- Run the Baseline Script**
-
-> python baseline.py
->
-> \# Expected output:
->
-> \# easy: 1.0
->
-> \# medium: 1.0
->
-> \# hard: 1.0
->
-> \# Average baseline score: 1.0
-
-If any score is 0.0, your grader is broken. Debug env.py → grader logic.
-
-**Step 4 --- Test with a WRONG Fix**
-
-This verifies your grader correctly gives 0.0 for bad answers:
-
-> curl -X POST http://localhost:7860/reset \\
->
-> -H \'Content-Type: application/json\' \\
->
-> -d \'{\"task_id\": \"easy\"}\'
->
-> curl -X POST http://localhost:7860/step \\
->
-> -H \'Content-Type: application/json\' \\
->
-> -d \'{\"fixed_code\": \"def sum_list(nums): return 999\"}\'
->
-> \# Expected: {reward: 0.0, done: true, passed: false}
-
-**Step 5 --- Build and Run Docker**
-
-> docker build -t debugtrace-env .
->
-> docker run -p 7860:7860 debugtrace-env
 >
 > \# Re-run all curl tests above against localhost:7860
 >
@@ -654,12 +582,12 @@ signals\':
   ------------------------------------------------------------------------
   **Score**       **Condition**   **Meaning**
   --------------- --------------- ----------------------------------------
-  1.0             All tests pass  Agent produced a correct fix
+  0.99            All tests pass  Agent produced a correct fix
 
   0.5             Code runs, no   Partial fix --- compiles but wrong logic
                   crash           
 
-  0.0             Crash or syntax Fix is completely broken
+  0.01            Crash or syntax Fix is completely broken
                   error           
   ------------------------------------------------------------------------
 

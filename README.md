@@ -19,7 +19,7 @@ DebugTraceEnv is an RL environment where an AI agent receives:
 - A failing test suite
 - A stack trace
 
-The agent must produce a corrected version of the function. The grader runs the fix against the test suite and returns a score from 0.0 to 1.0.
+The agent must produce a corrected version of the function. The grader runs the fix against the test suite and returns a score from 0.01 to 0.99.
 
 ## Project Structure
 
@@ -50,23 +50,19 @@ Fix a deeper algorithmic bug or incorrect algorithm implementation.
 ## API Endpoints
 
 - `POST /reset` - Reset environment and start a task
-  ```json
-  {"task_id": "easy"}
-  ```
+  Returns: `{"observation": {...}}`
 
 - `POST /step` - Submit a fixed code solution
-  ```json
-  {"fixed_code": "def sum_list(nums):\n    ..."}
-  ```
+  Returns: `{"observation": {...}, "reward": float, "done": bool, "info": {...}}`
 
 - `GET /state` - Get current environment state
 
 - `GET /tasks` - List all available tasks
 
+- `GET /schema` - Get action and observation schemas
+
 - `POST /grader` - Grade a fixed code submission
-  ```json
-  {"fixed_code": "def sum_list(nums):\n    ..."}
-  ```
+  Returns: `{"score": float, "passed": bool}`
 
 - `POST /baseline` - Run baseline agent with correct answers
 
@@ -118,7 +114,7 @@ See `openenv.yaml` for the formal specification including:
 
 ## Baseline Performance
 
-The baseline agent achieves 1.0 (perfect) score on all tasks by submitting hardcoded correct fixes. This validates that the grader works correctly.
+The baseline agent achieves 0.99 score on all tasks by submitting hardcoded correct fixes. This validates that the grader works correctly.
 
 ## Development
 
