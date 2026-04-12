@@ -53,6 +53,10 @@ class DebugTraceEnv:
         }
 
     def _grade(self, fixed_code):
+        def _clamp(score):
+            """Ensure score is strictly between 0.01 and 0.99"""
+            return max(0.01, min(0.99, score))
+        
         task = self.current_task
         with tempfile.TemporaryDirectory() as tmpdir:
             code_file = os.path.join(tmpdir, 'solution.py')
@@ -77,12 +81,12 @@ class DebugTraceEnv:
                 total = passed + failed
                 
                 if passed == total and total > 0:
-                    return 0.99
+                    return _clamp(0.99)
                 elif total > 0:
                     # Scale partial passing fraction out of 0.98 maximum partial bound
                     score = 0.01 + ((passed / total) * 0.97)
-                    return round(score, 2)
+                    return _clamp(score)
             elif result.returncode == 0:
-                return 0.5  # compiled, no crash, but no tests passed
+                return _clamp(0.5)  # compiled, no crash, but no tests passed
             
-            return 0.01
+            return _clamp(0.01)
