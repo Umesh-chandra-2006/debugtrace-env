@@ -48,7 +48,7 @@ class DebugTraceEnv:
         try:
             task = self.current_task
             if task is None:
-                return 0.5
+                return 0.1
 
             with tempfile.TemporaryDirectory() as tmpdir:
                 code_file = os.path.join(tmpdir, 'solution.py')
@@ -70,16 +70,14 @@ class DebugTraceEnv:
                     passed = int(passed_match.group(1))
                     failed = int(failed_match.group(1)) if failed_match else 0
                     total = passed + failed
-                    if passed == total and total > 0:
-                        return 0.99
-                    elif total > 0:
-                        score = 0.01 + ((passed / total) * 0.97)
+                    if total > 0:
+                        # Score based on tests passed: range [0.01, 0.99]
+                        score = 0.01 + (passed / total) * 0.98
                         return round(score, 2)
 
-                if result.returncode == 0:
-                    return 0.5
-
-                return 0.01
+                # No tests matched or returncode indicates issue
+                return 0.1
 
         except Exception:
-            return 0.5
+            # ANY exception (timeout, file error, etc.) → safe fallback
+            return 0.1
