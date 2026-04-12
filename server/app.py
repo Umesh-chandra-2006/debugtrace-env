@@ -76,7 +76,7 @@ def get_logs():
 @app.post('/grader')
 def grader(req: StepRequest):
     if not env.current_task:
-        return {'error': 'No active task. Call /reset first.'}
+        env.reset('easy')  # auto-init to easy task
     score = env._grade(req.fixed_code)
     return {'score': score, 'passed': score >= 0.99}
 

@@ -33,7 +33,14 @@ class DebugTraceEnv:
 
     def step(self, action: dict):
         if self.episode_done:
-            return {'error': 'Episode done. Call /reset first.'}
+            # Auto-reset to same task to allow validator to call step() repeatedly
+            if self.current_task:
+                self.episode_done = False
+                self.last_score = None
+            else:
+                # If no task set, initialize to easy
+                self.reset('easy')
+        
         fixed_code = action.get('fixed_code', '')
         score = self._grade(fixed_code)
         self.last_score = score
@@ -42,7 +49,7 @@ class DebugTraceEnv:
             'reward': score,
             'done': True,
             'score': score,
-            'passed': score == 1.0
+            'passed': score >= 0.99
         }
 
     def state(self):
@@ -55,7 +62,7 @@ class DebugTraceEnv:
     def _grade(self, fixed_code):
         def _clamp(score):
             """Ensure score is strictly between 0.01 and 0.99"""
-            return max(0.01, min(0.99, score))
+            return round(max(0.01, min(0.99, float(score))), 2)
         
         task = self.current_task
         with tempfile.TemporaryDirectory() as tmpdir:
