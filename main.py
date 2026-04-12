@@ -73,7 +73,7 @@ def get_logs():
 
 @app.post('/grader')
 def grader(req: GraderRequest):
-    env.reset(req.task_id)  # reset to the requested task
+    env.reset(req.task_id)  # reset to requested task
     score = env._grade(req.fixed_code)
     return {'score': score, 'passed': score >= 0.99}
 
