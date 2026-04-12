@@ -55,7 +55,7 @@ def run_episode(task_id):
         rewards.append(reward)
         steps_taken = 1
         
-        if reward >= 1.0:
+        if reward >= 0.99:
             success = True
             
     except Exception as e:

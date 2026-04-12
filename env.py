@@ -77,7 +77,7 @@ class DebugTraceEnv:
                 total = passed + failed
                 
                 if passed == total and total > 0:
-                    return 1.0
+                    return 0.99
                 elif total > 0:
                     # Scale partial passing fraction out of 0.98 maximum partial bound
                     score = 0.01 + ((passed / total) * 0.97)
@@ -85,4 +85,4 @@ class DebugTraceEnv:
             elif result.returncode == 0:
                 return 0.5  # compiled, no crash, but no tests passed
             
-            return 0.0
+            return 0.01
