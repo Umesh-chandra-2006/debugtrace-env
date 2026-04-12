@@ -32,6 +32,9 @@ class DebugTraceEnv:
         }
 
     def step(self, action: dict):
+        # Guard: if no task loaded, auto-init to easy
+        if self.current_task is None:
+            self.reset('easy')
         if self.episode_done:
             # Auto-reset to current task instead of erroring
             self.episode_done = False
@@ -78,6 +81,10 @@ class DebugTraceEnv:
                 return rounded
         
         task = self.current_task
+        # Guard: if no task, return safe failure score
+        if task is None:
+            return _clamp(0.01)
+        
         with tempfile.TemporaryDirectory() as tmpdir:
             code_file = os.path.join(tmpdir, 'solution.py')
             test_file = os.path.join(tmpdir, 'test_solution.py')
