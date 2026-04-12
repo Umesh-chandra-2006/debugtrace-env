@@ -59,61 +59,43 @@ class DebugTraceEnv:
 
     def _grade(self, fixed_code):
         def _clamp(score):
-            """Ensure score is strictly between 0.01 and 0.99"""
-            # Convert to float and handle edge cases
-            s = float(score)
-            # If exactly 0, 1, or out of safe range, clamp defensively
-            if s <= 0.0:
-                return 0.01
-            elif s >= 1.0:
-                return 0.99
-            elif s < 0.01:
-                return 0.01
-            elif s > 0.99:
-                return 0.99
-            else:
-                # Round to 2 decimals, then check again in case of precision issues
-                rounded = round(s, 2)
-                if rounded <= 0.0:
-                    return 0.01
-                elif rounded >= 1.0:
-                    return 0.99
-                return rounded
-        
+            return round(max(0.0, min(1.0, float(score))), 2)
+
         task = self.current_task
-        # Guard: if no task, return safe failure score
         if task is None:
-            return _clamp(0.01)
-        
-        with tempfile.TemporaryDirectory() as tmpdir:
-            code_file = os.path.join(tmpdir, 'solution.py')
-            test_file = os.path.join(tmpdir, 'test_solution.py')
-            with open(code_file, 'w') as f:
-                f.write(fixed_code)
-            with open(test_file, 'w') as f:
-                f.write('from solution import *\n')
-                f.write(task['test_code'])
-            result = subprocess.run(
-                ['python', '-m', 'pytest', test_file, '-q', '--tb=no'],
-                capture_output=True, text=True, cwd=tmpdir, timeout=10
-            )
+            return 0.1
 
-            import re
-            passed_match = re.search(r'(\d+) passed', result.stdout)
-            failed_match = re.search(r'(\d+) failed', result.stdout)
-
-            if passed_match:
-                passed = int(passed_match.group(1))
-                failed = int(failed_match.group(1)) if failed_match else 0
-                total = passed + failed
+        try:
+            with tempfile.TemporaryDirectory() as tmpdir:
+                code_file = os.path.join(tmpdir, 'solution.py')
+                test_file = os.path.join(tmpdir, 'test_solution.py')
                 
-                if passed == total and total > 0:
-                    return _clamp(0.99)
-                elif total > 0:
-                    # Scale partial passing fraction out of 0.98 maximum partial bound
-                    score = 0.01 + ((passed / total) * 0.97)
-                    return _clamp(score)
-            elif result.returncode == 0:
-                return _clamp(0.5)  # compiled, no crash, but no tests passed
-            
-            return _clamp(0.01)
+                with open(code_file, 'w') as f:
+                    f.write(fixed_code)
+                with open(test_file, 'w') as f:
+                    f.write('from solution import *\n')
+                    f.write(task['test_code'])
+                
+                result = subprocess.run(
+                    ['python', '-m', 'pytest', test_file, '-q', '--tb=no'],
+                    capture_output=True, text=True, cwd=tmpdir, timeout=10
+                )
+                
+                import re
+                passed_match = re.search(r'(\d+) passed', result.stdout)
+                failed_match = re.search(r'(\d+) failed', result.stdout)
+                
+                if passed_match:
+                    passed = int(passed_match.group(1))
+                    failed = int(failed_match.group(1)) if failed_match else 0
+                    total = passed + failed
+                    if total > 0:
+                        return _clamp(passed / total)
+                
+                if result.returncode == 0:
+                    return 0.5
+                
+                return 0.1
+
+        except Exception:
+            return 0.1
