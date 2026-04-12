@@ -19,7 +19,7 @@ DebugTraceEnv is an RL environment where an AI agent receives:
 - A failing test suite
 - A stack trace
 
-The agent must produce a corrected version of the function. The grader runs the fix against the test suite and returns a score from 0.0 to 1.0.
+The agent must produce a corrected version of the function. The grader runs the fix against the test suite and returns a score from 0.01 to 0.99.
 
 ## Project Structure
 
@@ -120,10 +120,10 @@ See `openenv.yaml` for the formal specification including:
 
 | Task | Score |
 |------|-------|
-| easy | 1.0 |
-| medium | 1.0 |
-| hard | 1.0 |
-| Average | 1.0 |
+| easy | 0.99 |
+| medium | 0.99 |
+| hard | 0.99 |
+| Average | 0.99 |
 
 The baseline agent achieves perfect 1.0 score on all tasks by submitting hardcoded correct fixes. This validates that the grader works correctly and that all test suites pass with the correct implementations.
 
