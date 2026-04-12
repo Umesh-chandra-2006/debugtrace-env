@@ -24,7 +24,11 @@ class DebugTraceEnv:
         self.episode_done = False
         self.last_score = None
         return {
-            "observation": self._get_observation()
+            'task_id': task['id'],
+            'description': task['description'],
+            'broken_code': task['broken_code'],
+            'stack_trace': task['stack_trace'],
+            'instruction': 'Return a fixed version of the function in fixed_code field'
         }
 
     def step(self, action: dict):
@@ -35,13 +39,10 @@ class DebugTraceEnv:
         self.last_score = score
         self.episode_done = True
         return {
-            "observation": self._get_observation(),
-            "reward": score,
-            "done": True,
-            "info": {
-                "score": score,
-                "passed": score >= 0.99
-            }
+            'reward': score,
+            'done': True,
+            'score': score,
+            'passed': score == 1.0
         }
 
     def state(self):

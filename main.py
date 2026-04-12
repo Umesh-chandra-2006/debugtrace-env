@@ -22,13 +22,17 @@ class Observation(BaseModel):
     instruction: str
 
 class ResetResponse(BaseModel):
-    observation: Observation
+    task_id: str
+    description: str
+    broken_code: str
+    stack_trace: str
+    instruction: str
 
 class StepResponse(BaseModel):
-    observation: Observation
     reward: float
     done: bool
-    info: dict
+    score: float
+    passed: bool
 
 @app.post('/reset', response_model=ResetResponse)
 def reset(req: Optional[ResetRequest] = None):
