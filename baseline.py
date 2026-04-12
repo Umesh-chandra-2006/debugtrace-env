@@ -29,9 +29,27 @@ def run_baseline():
             requests.post(f'{BASE_URL}/reset', json={'task_id': task_id})
             step_resp = requests.post(f'{BASE_URL}/step', json={'fixed_code': fix}).json()
             
-            # Get score and clamp to safe range (0.01, 0.99)
+            # Get score and defensively clamp to safe range (0.01, 0.99)
             score = step_resp.get('reward', 0.01)
-            score = max(0.01, min(0.99, float(score)))
+            score = float(score)
+            # Defensive clamping against any edge cases or precision issues
+            if score <= 0.0:
+                score = 0.01
+            elif score >= 1.0:
+                score = 0.99
+            elif score < 0.01:
+                score = 0.01
+            elif score > 0.99:
+                score = 0.99
+            else:
+                rounded = round(score, 2)
+                if rounded <= 0.0:
+                    score = 0.01
+                elif rounded >= 1.0:
+                    score = 0.99
+                else:
+                    score = rounded
+            
             results[task_id] = score
             print(f'{task_id}: {score}')
         except Exception as e:

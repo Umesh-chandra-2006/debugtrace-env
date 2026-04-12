@@ -57,7 +57,25 @@ class DebugTraceEnv:
     def _grade(self, fixed_code):
         def _clamp(score):
             """Ensure score is strictly between 0.01 and 0.99"""
-            return round(max(0.01, min(0.99, float(score))), 2)
+            # Convert to float and handle edge cases
+            s = float(score)
+            # If exactly 0, 1, or out of safe range, clamp defensively
+            if s <= 0.0:
+                return 0.01
+            elif s >= 1.0:
+                return 0.99
+            elif s < 0.01:
+                return 0.01
+            elif s > 0.99:
+                return 0.99
+            else:
+                # Round to 2 decimals, then check again in case of precision issues
+                rounded = round(s, 2)
+                if rounded <= 0.0:
+                    return 0.01
+                elif rounded >= 1.0:
+                    return 0.99
+                return rounded
         
         task = self.current_task
         with tempfile.TemporaryDirectory() as tmpdir:
