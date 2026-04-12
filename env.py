@@ -33,14 +33,9 @@ class DebugTraceEnv:
 
     def step(self, action: dict):
         if self.episode_done:
-            # Auto-reset to same task to allow validator to call step() repeatedly
-            if self.current_task:
-                self.episode_done = False
-                self.last_score = None
-            else:
-                # If no task set, initialize to easy
-                self.reset('easy')
-        
+            # Auto-reset to current task instead of erroring
+            self.episode_done = False
+            self.last_score = None
         fixed_code = action.get('fixed_code', '')
         score = self._grade(fixed_code)
         self.last_score = score

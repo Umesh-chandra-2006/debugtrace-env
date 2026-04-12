@@ -39,7 +39,7 @@ def reset(req: Optional[ResetRequest] = None):
     task_id = req.task_id if req else 'easy'
     return env.reset(task_id)
 
-@app.post('/step', response_model=StepResponse)
+@app.post('/step')
 def step(req: StepRequest):
     return env.step({'fixed_code': req.fixed_code})
 
