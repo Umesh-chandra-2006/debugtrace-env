@@ -20,7 +20,9 @@ class StepRequest(BaseModel):
     fixed_code: str
 
 @app.post('/reset')
-def reset(req: ResetRequest = Body(default=ResetRequest())):
+def reset(req: ResetRequest | None = Body(default=None)):
+    if req is None:
+        req = ResetRequest()
     return env.reset(req.task_id)
 
 @app.post('/step')

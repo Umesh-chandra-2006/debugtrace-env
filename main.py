@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
+from typing import Optional
 from env import DebugTraceEnv
 from tasks import TASKS
 import uvicorn
@@ -30,8 +31,9 @@ class StepResponse(BaseModel):
     info: dict
 
 @app.post('/reset', response_model=ResetResponse)
-def reset(req: ResetRequest):
-    return env.reset(req.task_id)
+def reset(req: Optional[ResetRequest] = None):
+    task_id = req.task_id if req else 'easy'
+    return env.reset(task_id)
 
 @app.post('/step', response_model=StepResponse)
 def step(req: StepRequest):
